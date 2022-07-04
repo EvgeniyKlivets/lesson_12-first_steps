@@ -5,7 +5,8 @@
       "App\\": "App/",
       "Config\\": "Config/",
       "Core\\": "Core/"
-    }
+    },
+    "files": ["Config/function.php"]
   },
   "authors": [
     {
