@@ -24,3 +24,4 @@
         </div>
     </div>
 </div>
+<?php Core\View::render('layout/footer'); ?>
