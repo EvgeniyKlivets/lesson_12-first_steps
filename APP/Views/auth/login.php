@@ -3,7 +3,7 @@
 <div class="container">
     <div class="row">
         <div class="col-12 d-flex align-items-center justify-content-center">
-            <div class="card mt-5">
+            <div class="card w-50 mt-5">
                 <h5 class="card-header">Login</h5>
                 <div class="card-body">
                     <form action="<?= SITE_URL . '/auth/verify' ?>" method="POST">
@@ -17,6 +17,7 @@
                             <input type="password" name="password" class="form-control" id="exampleInputPassword1">
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
+                        <a href="<?= SITE_URL . '/registration' ?>">Create an account</a>
                     </form>
                 </div>
             </div>
