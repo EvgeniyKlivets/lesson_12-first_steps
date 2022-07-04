@@ -1,12 +1,16 @@
 <?php
 namespace Core;
 
-use Config\Config;
-use PDO;
+use Core\Traits\QueryTrair;
+use Core\Traits\QueryTrait;
+
+/*use Config\Config;
+use PDO;*/
 
 abstract class Model
 {
-    protected static PDO|null $connect = null;
+    use QueryTrait;
+   /* protected static PDO|null $connect = null;
     protected static function connect()
     {
         if (is_null(static::$connect)){
@@ -21,5 +25,5 @@ abstract class Model
             self::$connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
         return self::$connect;
-    }
+    }*/
 }
