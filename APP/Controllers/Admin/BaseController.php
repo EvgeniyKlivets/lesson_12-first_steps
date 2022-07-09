@@ -1,6 +1,8 @@
 <?php
+/* авторизированный пользователь или нет*/
 
 namespace App\Controllers\Admin;
+
 
 use App\Helpers\SessionHelper;
 use Core\Controller;
