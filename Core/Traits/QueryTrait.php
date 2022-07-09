@@ -88,6 +88,44 @@ trait QueryTrait
 
         return $stmt->fetchAll(PDO::FETCH_CLASS, static::class);
     }
+    
+     public function update(array $data)
+    {
+        if (!isset($this->id)) {
+            return $this;
+        }
+
+        $query = "UPDATE " . static::$tableName . ' SET ' . static::buildPlaceholders($data) . " WHERE id=:id";
+        $stmt = static::connect()->prepare($query);
+
+        foreach ($data as $key => $value) {
+            $stmt->bindValue(":{$key}", $value);
+        }
+
+        $stmt->bindValue('id', $this->id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return static::find($this->id);
+    }
+
+    public static function delete(int $id)
+    {
+        $query = 'DELETE FROM ' . static::$tableName . ' WHERE id = :id';
+
+        $stmt = static::connect()->prepare($query);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
+
+    public function destroy()
+    {
+        if (!isset($this->id)) {
+            return $this;
+        }
+
+        return static::delete($this->id);
+    }
 
     protected static function preparedQueryVars(array $fields):array
     {
@@ -98,5 +136,15 @@ trait QueryTrait
             'keys' => implode(',',$keys),
             'placeholders' => implode(',', $placeholders)
         ];
+    }
+    private static function buildPlaceholders(array $data): string
+    {
+        $ps = [];
+
+        foreach ($data as $key => $value) {
+            $ps[] = " {$key}=:{$key}";
+        }
+
+        return implode(', ', $ps);
     }
 }
