@@ -15,7 +15,7 @@ class PostsController extends BaseController
      $posts = Post::all();
      View::render('admin/posts/index',['post'=>$posts]);
  }
- public finction create()
+ public function create()
     {
         View::render('admin/posts/create');
     }
