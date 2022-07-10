@@ -1,65 +1,83 @@
 <?php
 
-namespace App\Controllers\Admin;
+namespace App\Controllers\admin;
 
-use App\Models\Category;
+use App\Models\Categories;
+use App\Models\Post;
 use App\Services\FileUploaderService;
+use App\Validators\Posts\PostValidator;
 use Core\View;
 
-class CategoriesController extends  BaseController
+class CategoriesController extends BaseController
 {
     public function index()
     {
-        $categories = Category::all();
-        View::render('admin/categories/index',['categories'=>$categories]);
+        $categories = Categories::all();
+
+        View::render('admin/categories/index' , ['categories' => $categories]);
     }
 
     public function create()
     {
-        View:: render('admin/categories/create');
+        View::render('admin/categories/create');
     }
+
     public function store()
     {
-        if (empty($_FILES['image'])) {
-            throw new \Exception('Image is empty');
+        $validator = new PostValidator();
+        $imagePath =  FileUploaderService::upload($_FILES['image'],CATEGORIES_DIR);
+
+        if($validator->titleValidator($_POST['name']) && $validator->imageValidator($_FILES['image']['name'])) {
+            Categories::create([
+                'name' => htmlspecialchars($_POST['name']),
+                'description' => htmlspecialchars($_POST['description']),
+                'image' => $imagePath
+            ]);
+            redirect('admin/categories');
         }
 
-        $imagePath = FileUploaderService::upload($_FILES['image'], CATEGORIES_IMG_DIR);
-        Category::create([
-            'name' => $_POST['name'],
-            'description' => $_POST['description'],
-            'image' => $imagePath,
-        ]);
+        $data['name'] = $_POST['name'];
+        $data['description'] = $_POST['description'];
+        $data['errors'] = $validator->errors;
 
-        redirect('admin/categories');
+        View::render('admin/categories/create', ['data' => $data]);
     }
 
     public function edit(int $id)
     {
-        $category = Category::find($id);
+        $category = Categories::find($id);
         View::render('admin/categories/edit', ['category' => $category]);
     }
 
     public function update(int $id)
     {
-        $category = Category::find($id);
-        $categoryData = $_POST;
+        $validator = new PostValidator();
 
-        if (!empty($_FILES['image']) && $_FILES['image']['size'] > 0) {
-            FileUploaderService::remove(CATEGORIES_IMG_DIR . '/' . $category->image);
-            $imagePath = FileUploaderService::upload($_FILES['image'], CATEGORIES_IMG_DIR);
-            $categoryData['image'] = $imagePath;
+        if($validator->titleValidator($_POST['name'])) {
+            $category = Categories::find($id);
+            $categoryData = $_POST;
+            if (!empty($_FILES) && $_FILES['image']['size'] > 0) {
+                FileUploaderService::remove(CATEGORIES_DIR . '/' . $category->image);
+                $imagePath = FileUploaderService::upload($_FILES['image'], CATEGORIES_DIR);
+                $categoryData['image'] = $imagePath;
+            }
+
+            $category->update($categoryData);
+
+            redirect('admin/categories');
         }
+        $category = Categories::find($id);
+        $data['name'] = $_POST['name'];
+        $data['description'] = $_POST['description'];
+        $data['errors'] = $validator->errors;
 
-        $category->update($categoryData);
-
-        redirect('admin/categories');
+        View::render('admin/categories/edit', ['data' => $data, 'category' => $category]);
     }
 
     public function destroy(int $id)
     {
-        Category::delete($id);
-
+        Categories::delete($id);
         redirect('admin/categories');
     }
+
 }
