@@ -2,9 +2,11 @@
 
 namespace Core;
 
-class Controller
+use App\Helpers\SessionHelper;
+
+abstract class Controller
 {
-    protected $validation = "";
+   /* protected $validation = "";
 
     public function __call($name, $args)
     {
@@ -21,7 +23,7 @@ class Controller
     protected function before($actionName)
     {
         return true;
-    }
+    }*/
 
-    protected function after() {}
+    protected function after(string $action) {}
 }
